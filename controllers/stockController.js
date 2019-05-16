@@ -1,92 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const Stock = require('../models/stocks');
+const fetch = require("node-fetch")
 
 
-router.get('/', async (req, res) => {
-    console.log(req.body, ' this is get all')
 
-    try {
-        const allStocks = await Stock.find();
-
-        res.json({
-            status: 200,
-            data: allStocks
-        })
-
-    } catch(err) {
-        console.log(err);
-        res.send(err);
+router.get('/home', async(req,res)=>{
+    const data = await fetch('https://ws-api.iextrading.com/1.0/tops')
+    const parsedData = await data.json()
+    let stocks = [];
+    for(let i = 0; i < 10; i++){
+        stocks.push(parsedData[i])
     }
-});
-
-
-router.post('/', async (req, res) => {
-
-    try {
-        console.log(req.body, ' this is req.body');
-        const createdStock = await Stock.create(req.body);
-        console.log('response happening?');
-
-        res.json({
-            status: 200,
-            data: createdStock
-        });
-
-    } catch(err) {
-        console.log(err);
-        res.send(err);
-    }
-});
-
-
-router.get('/:id', async (req, res, next) => {
-
-    try {
-        const foundStock = await Stock.findById(req.params.id);
-
-        res.json({
-            status: 200,
-            data: foundStock
-        })
-
-    } catch(err) {
-        console.log(err);
-        res.send(err);
-    }
-});
-
-router.put('/:id', async (req, res) => {
-
-    try {
-        const updatedStock = await Stock.findByIdAndUpdate(req.params.id, req.body, {new: true});
-
-        res.json({
-            status: 200, 
-            data: updatedStock
-        });
-
-    } catch(err) {
-        console.log(err);
-        res.send(err);
-    }
-});
-
-
-router.delete('/:id', async (req, res) => {
-
-    try {
-        const deletedStock = await Stock.findByIdAndRemove(req.params.id);
-
-        res.json({
-            status: 200,
-            data: deletedStock
-        })
-
-    } catch(err) {
-        console.log(err);
-        res.send(err);
-    }
+    res.json({
+        success:true,
+        data: stocks,
+        message:"got all the stocks!"
+    })
 })
+
+
+
+
+
 
 module.exports = router;

@@ -1,8 +1,12 @@
 const express = require('express');
+const createError = require('http-errors')
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
+require('dotenv').config();
+
+console.log(process.env.MY_SECRET)
 
 require('./db/db');
 
@@ -13,9 +17,9 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.use()
+// app.use(bodyParser.urlencoded({extended: false}));
+// app.use(bodyParser.json());
+
 
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -25,12 +29,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(cors());
+// app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({extended:false}))
 
 
-// Require the controller after the middleware
+const stockController = require('./controllers/stockController');
+const authController = require('./controllers/authController');
 
-
+app.use('/api/v1', stockController);
+app.use('/auth', authController);
 
 
 app.listen(process.env.PORT || 9000, () => {

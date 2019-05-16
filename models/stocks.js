@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 
 const stockSchema = new mongoose.Schema({
-    title: String,
-    description: String
+   stockName: String
 });
 
 
